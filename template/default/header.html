@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="{#$STATIC_DIR#}/default/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<script language="javascript" type="text/javascript" src="{#$STATIC_DIR#}/default/js/jquery-1.9.1.js"></script>
+<script language="javascript" type="text/javascript" src="{#$STATIC_DIR#}/default/js/page.js"></script>
+<script language="javascript" type="text/javascript" src="{#$STATIC_DIR#}/default/js/common.js"></script>
+<div id='msgresult'>
+{#if $MSG_RESULT['status'] != ''#}
+<div class='prompt {#if $MSG_RESULT['status'] == 'succ'#}prompt-succ{#elseif $MSG_RESULT['status'] == 'fail'#}prompt-warn{#/if#}'>{#$MSG_RESULT['msg']#}</div>
+{#if $MSG_RESULT['status'] == 'succ'#}
+<script language="javascript" type="text/javascript">
+setTimeout("$('#msgresult').empty();",3000);
+</script>
+{#/if#}
+{#/if#}
+</div>

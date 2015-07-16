@@ -1,0 +1,149 @@
+{#include file='default/header.html'#}
+
+<div class="waper">
+	<div class='ctitle'>新增/编辑栏目</div>
+	<div class="section-line"></div>
+
+	<form id='form' method="post" action="index.php?ctl=class&act=edit&id={#$data['id']#}">
+	<input type="hidden" name="dopost" value="edit">
+	<input type='hidden' name='class[id]' value='{#$data['id']#}' />
+	<div class='contentEditGroup'>
+	<a href="javascript:;">基本信息</a>
+	{#if $parent == 0#}
+	
+	<a href="javascript:;" class='fcset'>属性设置</a>
+	<a href="javascript:;" class='fcset'>字段设置</a>
+	
+	{#/if#}
+	</div>
+
+	<div class='contentEditBox'>
+	<table cellpadding="0" cellspacing="0" class="table-detail" style='width:100%;'>
+	{#if $data['pid'] > 0 || $data['pid'] == ''#}
+	<tr>
+	<th width=120>
+	上级栏目：
+	</th>
+	<td>
+	<select name="class[parent]" onchange="isselectsc(this);">
+	{#$options#}
+	</select> <font class='notice'>栏目父级栏目</font>
+	</td>
+	</tr>
+	{#/if#}
+	<tr>
+	<th width=120>
+	栏目名称：
+	</th>
+	<td>
+	<input name="class[title]" type="text" value='{#$data['title']#}'  class='input-text' /> <font class='notice'>栏目名称，必填。</font>
+	</td>
+	</tr>
+
+	<tr>
+	<th width=120>
+	副标题：
+	</th>
+	<td>
+	<input name="class[subtitle]" type="text" value='{#$data['subtitle']#}'/>
+	</td>
+	</tr>
+
+
+	<tr>
+	<th width=120>
+	关键词：
+	</th>
+	<td>
+	<input name="class[keywords]" type="text" value='{#$data['keywords']#}'/> <font class='notice'>栏目关键词，有利于网站优化。</font>
+	</td>
+	</tr>
+
+	<tr>
+	<th width=120>
+	栏目描述：
+	</th>
+	<td>
+	<textarea name="class[description]" class='input-text' style="height:50px;">{#$data['description']#}</textarea> <font class='notice'>栏目描述，有利于网站优化。</font>
+	</td>
+	</tr>
+	
+	<tr>
+	<th width=120>
+	内容分页：
+	</th>
+	<td>
+	<input name="class[pagenum]" type="text" value='{#$data['pagenum']|default:10#}' style="width:50px;"/> <font class='notice'>设置前端每页显示数据条数</font>
+	</td>
+	</tr>
+
+	<tr>
+	<th width=120>
+	是否可删：
+	</th>
+	<td>
+	<label><input type="radio" name='class[isdel]' value="true" {#if $data['isdel'] == 'true' || $data.isdel == ''#}checked{#/if#}>可删</label>
+	<label><input type="radio" name='class[isdel]' value="false" {#if $data['isdel'] == 'false'#}checked{#/if#}>不可删</label> <font class='notice'>设置为是否允许删除</font>
+	</td>
+	</tr>
+
+	<tr>
+	<th width=120>
+	排序：
+	</th>
+	<td>
+	<input name="class[ordernum]" type="text" value='{#$data['ordernum']#}' style="width:50px;"/> <font class='notice'>栏目排序值，越小越靠前。</font>
+	</td>
+	</tr>
+
+	</table>
+	</div>
+
+	
+	<div class='contentEditBox'>
+	<table cellpadding="0" cellspacing="0" class="table-detail" style='width:100%;'>
+	<tr>
+	<th width=120>
+	后台列表页：
+	</th>
+	<td>
+	<input name="class[admin_listpage]" type="text" value='{#$data['admin_listpage']#}'/> <font class='notice'>后台列表页面地址</font>
+	</td>
+	</tr>
+
+	<tr>
+	<th width=120>
+	后台编辑页：
+	</th>
+	<td>
+	<input name="class[admin_editpage]" type="text" value='{#$data['admin_editpage']#}'/> <font class='notice'>后台编辑页面地址</font>
+	</td>
+	</tr>
+
+	</table>
+	</div>
+
+	<div class='contentEditBox'>
+	{#foreach from=$fields key=field item=name#}
+	<label><input type="checkbox" name="class[fields][]" value="{#$field#}" {#if is_array($data['fields']) && in_array($field,$data['fields'])#}checked{#/if#}> {#$name#}</label>
+	{#/foreach#}
+	</div>
+
+	<div style="margin:8px 0;text-align:center;">
+	<input class='btn blue' id='save' type="submit" value="保 存">
+	<input class='btn' type="button" onclick="page.redirect('index.php?ctl=class&act=index');" value="返 回">
+	</div>
+
+	</form>
+</div>
+<script>
+function isselectsc(e){
+	if(e.value != 0){
+		$('.fcset').hide();
+	}else{
+		$('.fcset').show();
+	}
+}
+</script>
+{#include file='default/footer.html'#}
+

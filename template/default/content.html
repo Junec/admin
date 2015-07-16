@@ -1,0 +1,91 @@
+{#include file="default/header.html"#}
+
+<div class="waper">
+	<div class="ctitle">{#$parentData.title#} -<span class="notice ft12">共{#$count#}条数据</span></div>
+	<div class="section-line"></div>
+	<div class="content-list-filter">
+		<div class='fl'>
+			<input class='btn small' id='save' type="submit" value="添加">
+			<input class='btn small' id='save' type="submit" value="删除">
+			<select>
+			<option value=''>==移动==</option>
+			{#$parentOptions#}
+			</select>
+			<select>
+			<option>==状态==</option>
+			{#foreach from=$status key=k item=v#}
+			<option value="{#$k#}">{#$v#}</option>
+			{#/foreach#}
+			</select>
+			
+		</div>
+		<div class='fr'>
+			<form method="get" action="">
+			<input type="hidden" name="ctl" value="content">
+			<input type="hidden" name="act" value="index">
+			<input type="hidden" name="parent" value="{#$parent#}">
+			<select name='filter[parent]'>
+			<option value=''>==所有栏目==</option>
+			{#$searchOptions#}
+			</select>
+			<select name='filter[status]'>
+			<option value=''>==状态==</option>
+			{#foreach from=$status key=k item=v#}
+			<option value="{#$k#}" {#if $filter.status == $k && $filter.status != ''#}selected{#/if#}>{#$v#}</option>
+			{#/foreach#}
+			</select>
+			<input name="filter[title|like]" type="text" value='{#$filter['title|like']#}' placeholder="输入关键词" style="width:100px;"/>
+			<input class='btn blue small' id='save' type="submit" value="查找">
+			</form>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<table cellpadding="0" cellspacing="0" class="table-list" style='width:100%;'>
+	<thead>
+	<tr>
+	<th width=40 style="position:relative;padding:0;"><a href="javascript:;" onclick="" style="display:block;width:100%;height:100%;"><img src="{#$STATIC_DIR#}/default/images/arrow.gif" style='position:absolute;top:6px;left:14px;'></a>
+	<div id='selectOption'>
+		<a href='javascript:;' onclick="" >选择当页</a>
+		<a href='javascript:;' onclick="">选择全部</a>
+		<a href='javascript:;' onclick="">无</a>
+	</div>
+	</th>
+	<th width=40 class="sort" onclick="content_orderby('id');">ID</th>
+	<th width=100 class="sort" onclick="content_orderby('parent');">栏目</th>
+	<th>标题</th>
+	<th width=50 class="sort" onclick="content_orderby('hits');">点击率</th>
+	<th width=100 class="sort" onclick="content_orderby('createtime');">发布时间</th>
+	<th width=40 class="sort" onclick="content_orderby('status');">状态</th>
+	<th width=80>操作</th>
+	</tr>
+	</thead>
+	<tbody>
+	{#foreach from=$data item=v#}
+		<tr>
+		<td width=20><input type="checkbox" class='pkey' name=""></td>
+		<td width=40>{#$v.id#}</td>
+		<td width=100><a href="index.php?ctl=content&act=index&parent={#$parent#}&filter[parent]={#$v.parent#}">{#$v.className#}</a></td>
+		<td><span class='cl2'></span><a href="index.php?ctl=content&act=edit&id={#$v.id#}">{#$v.title#}</a> </td>
+		<td width=50>{#$v.hits#}</td>
+		<td width=100>{#$v.createtime|date_format:"%Y-%m-%d %H:%M"#}</td>
+		<td width=40 style="{#if $v.status == 0#}background-color: #DFF0D8;border-bottom-color: #D6E9C6;color:#468847;{#elseif $v.status == 1#}background-color: #FCF8E3;border-bottom-color: #FBEED5;color:#C09853;{#/if#}">{#$v.statusName#}</td>
+		<td width=80><a href="javascript:;">上移</a> <a href="javascript:;">下移</a></td>
+		</tr>
+	{#/foreach#}
+		
+	</tbody>
+	</table>
+	<div class="pager">{#$pagerResult.list#}<div class="clear"></div></div>
+
+</div>
+<script>
+
+function content_orderby(field){
+	var orderbytype = '{#if $_GET.orderbytype == 'asc'#}desc{#else#}asc{#/if#}';
+	var url = 'index.php?{#$queryString#}';
+	var redirect_url = url+'&orderby='+field+'&orderbytype='+orderbytype;
+	page.redirect(redirect_url);
+}
+</script>
+{#include file="default/footer.html"#}

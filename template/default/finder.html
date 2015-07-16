@@ -1,0 +1,204 @@
+{#include file='default/header.html'#}
+<div class="waper">
+	<div class="ctitle">
+	<div class="fl">
+	{#$finder['title']#} -<span class="notice ft12">共{#$finder['count']#}条数据</span>
+	</div>
+	<div class="fr">
+		<span class="notice ft12">类别：</span>
+		<select onchange="page.redirect(this.value);">
+		<option value="{#$finder['baseurl']#}" {#if $finder['findertag'] == ''#}selected{#/if#}>全部</option>
+		{#foreach from=$finder['tag'] key=k item=v#}
+		<option value="{#$v['url']#}" {#if is_numeric($finder['findertag']) && $finder['findertag'] == $k#}selected{#/if#}>{#$v['title']#}({#$v['count']#})</option>
+		{#/foreach#}
+		</select>
+	</div>
+	</div>
+	<div class="section-line"></div>
+	<div class="content-list-filter">
+		<div class='fl'>
+			{#foreach from=$finder['button'] item=v#}
+			<a class='btn small' href="{#$v['href']#}">{#$v['title']#}</a>
+			{#/foreach#}
+			
+		</div>
+		<div class='fr'>
+			<form method="post" action="">
+			<input type="hidden" name="dopost" value="finderSearch">
+			筛选：{#foreach from=$finder['search']['select'] key=filtername item=v#}
+				<select name='finderse[select][{#$v['key']#}]'>
+					<option value="">={#$v['title']#}=</option>
+					{#foreach from=$v['value'] key=sk item=sv#}
+					<option value="{#$sk#}" {#if is_numeric($finder['filter'][$filtername]) && $finder['filter'][$filtername] == $sk#}selected{#/if#} >{#$sv#}</option>
+					{#/foreach#}
+				</select>
+			{#/foreach#}
+			<select name='finderse[input]'>
+			{#foreach from=$finder['search']['input'] item=v#}
+				<option value="{#$v['key']#}">{#$v['title']#}</option>
+			{#/foreach#}
+			</select>
+			<input name="finderse[input-value]" type="text" value='{#$_GET['finderseiv']#}' placeholder="输入关键词" style="width:100px;"/>
+			<input class='btn blue small' type="submit" value="查找">
+			<!--<input class='btn blue small' type="button" value="更多筛选">-->
+			</form>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div id="finder-header">
+
+	
+
+	<table cellpadding="0" cellspacing="0" class="table-list" style='width:100%;'>
+	<thead>
+	{#if $finder['ischeckbox']#}
+	<tr>
+	<th width=20 style="position:relative;"><a href="javascript:;" onclick="finder.openSelectBox();"><img src="{#$STATIC_DIR#}/default/images/arrow.gif" style='position:absolute;top:6px;left:14px;'></a>
+	<div id='selectOption'>
+		<a href='javascript:;' onclick="finder.selectPage();" >选择当页</a>
+		<a href='javascript:;' onclick="finder.selectAll();">选择全部</a>
+		<a href='javascript:;' onclick="finder.selectNone();">无</a>
+	</div>
+	</th>
+	{#/if#}
+	{#foreach from=$finder['fields'] key=k item=v#}
+	<th width={#$v['width']#} {#if $v['sort']#}class="sort {#if $_GET['orderby'] == $k#}sort-{#$_GET['orderbytype']|default:'asc'#}{#/if#}" onclick="finder.orderby('{#$k#}');"{#/if#}>{#$v['title']#}</th>
+	{#/foreach#}
+	</tr>
+	</thead>
+	</table>
+	</div>
+	<div id="finder-content">
+	<div id='selectNums'></div>
+	<table cellpadding="0" cellspacing="0" class="table-list" style='width:100%;'>
+	<tbody>
+	{#foreach from=$finder['data'] key=k item=v#}
+		<tr class="row {#if ($k+1)%2 == 0#}s2{#/if#}">
+		{#if $finder['ischeckbox']#}
+		<td width=20><input type="checkbox" class='pkey' value="{#$v['id']#}"></td>
+		{#/if#}
+		{#foreach from=$finder['fields'] key=fk item=fv#}
+		<td width={#$fv['width']#}>{#$v[$fk]|default:'&nbsp;'#}</td>
+		{#/foreach#}
+		</tr>
+	{#foreachelse#}
+	<tr><td class='center'>暂无数据...</td><tr>
+	{#/foreach#}
+		
+	</tbody>
+	</table>
+	</div>
+
+
+	<div class="pager">{#$finder['pager']['list']#}<div class="clear"></div></div>
+
+</div>
+<script>
+
+var finder = {
+	filter : '',
+	lineNums : 0,
+
+	init : function(){
+		$('.pkey').bind('change',function(){
+			finder.selectOne(this);
+		});
+	},
+	openSelectBox : function(){
+		$('#selectOption').toggle();
+		$('#selectOption').bind('mouseover',function(){
+			$('#selectOption').show();
+		});
+		$('#selectOption').bind('mouseout',function(){
+			$('#selectOption').hide();
+		});
+	},
+	selectOne : function(e){
+		if( $(e).is(':checked') == true ){
+			$(e).parent().parent().addClass('active');
+		}else if( $(e).is(':checked') == false ){
+			$(e).parent().parent().removeClass('active');
+		}
+		finder.setSelectParams();
+	},
+	selectPage : function(){
+		$('.pkey').prop('checked',true );
+		$('.row').addClass('active');
+		finder.setSelectParams();
+		$('#selectOption').hide();
+	},
+	selectAll : function(){
+		$('.pkey').prop('checked',true );
+		$('.row').addClass('active');
+		finder.setSelectParams('ALL');
+		$('#selectOption').hide();
+	},
+	selectNone : function(){
+		$('.pkey').prop('checked',false );
+		$('.row').removeClass('active');
+		finder.setSelectParams();
+		$('#selectOption').hide();
+	},
+	setSelectParams : function(type){
+		var selectLine = $('.pkey:checked');
+		var selectLineLength = selectLine.length;
+		var _selectLine = Array(),_selectLineIndex= 0;
+		for(var i=0;i<selectLineLength;i++){
+			if(selectLine[i].checked == true){
+				_selectLine[_selectLineIndex++] = selectLine[i].value;
+			}
+		}
+		if(type != 'ALL'){
+			finder.filter = {{#$finder.pkey#}:_selectLine};
+			finder.lineNums = _selectLine.length;
+			html = '选中当前页 <font style="font-weight:bold">'+finder.lineNums+'</font> 条数据！ ';
+		}else{
+			finder.filter = {#$finder.jsonFilter#};
+			finder.lineNums = {#$finder.count#};
+			html = '选中全部页 <font style="font-weight:bold">'+finder.lineNums+'</font> 条数据！ ';
+		}
+
+		$('#selectNums').html(html+' <a href="javascript:;" onclick="finder.selectNone();" >取消选中</a>');
+		if(finder.lineNums <= 0){
+			$('#selectNums').hide();
+		}else{
+			$('#selectNums').show();
+		}
+	},
+	orderby : function(field){
+		var orderby = '{#$_GET['orderby']#}';
+		var orderbytype = '{#$_GET['orderbytype']#}';
+		if(orderby != field){
+			orderbytype = 'asc';
+		}else{
+			
+			if(orderbytype == 'desc') orderbytype = 'asc';
+			else orderbytype = 'desc';
+		}
+		var url = 'index.php?{#$finder['orderbyQueryString']#}';
+		var redirectUrl = url+'&orderby='+field+'&orderbytype='+orderbytype;
+		page.redirect(redirectUrl);
+	},
+	submit : function(submitUrl,msg){
+		if(typeof(msg) != 'undefined'){
+			if(!window.confirm(msg)) return false;
+		}
+		if(finder.lineNums <= 0){ page.msg('fail','错误信息：请选择要操作的数据');return; }
+
+		var submitData = {filter:finder.filter};
+		//submit
+		$.post(submitUrl,submitData,function(rs){
+			if(rs != ''){
+				rs = eval('('+rs+')');
+				if(rs.status != 'succ'){
+					page.msg('fail',rs.response);
+				}
+			}
+			page.redirect('{#$finder.url#}');
+		});
+	},
+}
+finder.init();
+</script>
+{#include file='default/footer.html'#}

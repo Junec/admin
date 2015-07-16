@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="{#$STATIC_DIR#}/default/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<script language="javascript" type="text/javascript" src="{#$STATIC_DIR#}/default/js/jquery-1.9.1.js"></script>
+<script language="javascript" type="text/javascript" src="{#$STATIC_DIR#}/default/js/common.js"></script>
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+	autowh();
+});
+window.onresize = function(){
+	autowh();
+};
+</script>
+
+<body>
+<div class="main">
+	<div class="main-top">
+		<div id="page-loadding"></div>
+		<div class='main-top-left'></div>
+		<div class="main-top-right">
+
+		</div>
+	</div>
+	<div class="main-body">
+		<div class="main-body-left">
+			<dl class='nav'>
+				<dt><a href="#">网站信息设置</a></dt>
+			</dl>
+			<dl class='nav'>
+				<dt><a href="?ctl=class" target="main-content">栏目管理</a></dt>
+			</dl>
+			{#foreach from=$menus item=v#}
+			<dl class='nav'>
+				<dt><a href="?ctl=content&act=index&parent={#$v['id']#}" target="main-content">{#$v['title']#}</a></dt>
+			</dl>
+			{#/foreach#}
+
+			<dl class='nav snav'>
+				<dt><a href="#">系统设置</a></dt>
+				<dd>
+					<a href="?ctl=class" target="main-content">用户管理</a>
+					<a href="?ctl=class" target="main-content">栏目管理</a>
+				</dd>
+			</dl>
+	
+
+			<dl class='nav snav'>
+				<dt><a href="#">高级设置</a></dt>
+
+			</dl>
+		</div>
+		<div class="main-body-right">
+			<iframe frameBorder="0" id="main-content" name="main-content" src="" width="100%" height="100%"></iframe>
+		</div>
+		<div class='clear'></div>
+	</div>
+</div>
+<script language="javascript" type="text/javascript">
+$('dl.nav dt').click(function(){
+	$('dl.nav').removeClass('active');
+	$(this).parent().toggleClass('active');
+});
+
+</script>
+</body>
+</html>
+
